@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout.html}"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Q-pharma | sales</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+
+    <style>
+        .err{
+            color: red;
+        }
+        .mm{
+            color: green;
+        }
+        .sform{
+            background-color: aqua;
+        }
+    </style>
+
+</head>
+<body>
+<div layout:fragment="custom-content">
+    <div class="container">
+        <br />
+        <br />
+        <h3><i class="fa fa-book"></i> Drug Sales</h3>
+        <div class="form-group bg-success">
+            <form name="add_name" id="add_name" th:object="${sales}" th:action="@{/sales/add}"  th:method="POST">
+
+                <span th:class="err" th:text="${rejectMsg}"></span>
+                <span th:class="mm" th:text="${success}"></span>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dynamic_field">
+                        <tr>
+                            <th>Drug</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                        </tr>
+                        <tr>
+                            <td> <select th:field="*{drug}" id="f-dname" class="form-control">
+                                <option th:each="d : ${druglist}" th:value="${d.id}"><span th:text="${d.drugName}"></span></option>
+                            </select></td>
+                            <td><input type="text" name="qty[]" placeholder="Qty" class="form-control qty_list" th:field="*{qty}" required="true"/></td>
+                            <td><input type="text" name="price[]" placeholder="Price" class="form-control price_list" th:field="*{unitPrice}" required="true"/></td>
+                            <td><button type="button" name="add" id="add" class="btn btn-success">Add More</button></td>
+                        </tr>
+                    </table>
+                    <button type="submit" name="submit" id="submit" class="btn btn-info">Submit</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+
+</div>
+</div>
+</body>
+</html>
+<script>
+    $(document).ready(function(){
+        var i=1;
+        $('#add').click(function(){
+            i++;
+            $('#dynamic_field').append('<tr id="row'+i+'"><td><input type="text" name="drug[]" placeholder="" class="form-control drug_list" /></td><td><input type="text" name="qty[]" placeholder="" class="form-control qty_list" /></td><td><input type="text" name="price[]" placeholder="" class="form-control price_list" /></td><td><button type="button" name="remove" id="'+i+'" class="btn btn-danger btn_remove">X</button></td></tr>');
+        });
+        $(document).on('click', '.btn_remove', function(){
+            var button_id = $(this).attr("id");
+            $('#row'+button_id+'').remove();
+        });
+        $('#submit').click(function(){
+            $.ajax({
+                url:"name.php",
+                method:"POST",
+                data:$('#add_name').serialize(),
+                success:function(data)
+                {
+                    alert(data);
+                    $('#add_name')[0].reset();
+                }
+            });
+        });
+    });
+</script>
